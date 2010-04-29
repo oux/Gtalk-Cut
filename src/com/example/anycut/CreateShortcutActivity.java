@@ -35,9 +35,13 @@ import android.os.Bundle;
 import android.provider.Contacts;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
+import android.provider.Contacts.ContactMethods;
+import android.provider.Contacts.Extensions;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
 
 /**
  * Presents the user with a list of types of shortucts that can be created.
@@ -55,9 +59,9 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
 
     private static final int LIST_ITEM_DIRECT_CALL = 0;
     private static final int LIST_ITEM_DIRECT_TEXT = 1;
-    private static final int LIST_ITEM_ACTIVITY = 2;
-    private static final int LIST_ITEM_CUSTOM = 3;
-    private static final int LIST_ITEM_DIRECT_GTALK = 4;
+    private static final int LIST_ITEM_DIRECT_GTALK = 2;
+    private static final int LIST_ITEM_ACTIVITY = 3;
+    private static final int LIST_ITEM_CUSTOM = 4;
 
     private static final int DIALOG_SHORTCUT_EDITOR = 1;
 
@@ -91,7 +95,7 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
             }
 
             case LIST_ITEM_DIRECT_GTALK: {
-                Intent intent = new Intent(Intent.ACTION_PICK, Phones.CONTENT_URI);
+                Intent intent = new Intent(Intent.ACTION_PICK, ContactMethods.CONTENT_URI);
                 intent.putExtra(Contacts.Intents.UI.TITLE_EXTRA_KEY,
                         getText(R.string.gtalkShortcutActivityTitle));
                 startActivityForResult(intent, REQUEST_GTALK);
@@ -134,7 +138,7 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
             }
 
             case REQUEST_GTALK: {
-                startShortcutEditor(generatePhoneShortcut(result, R.drawable.sym_action_sms,
+                startShortcutEditor(generateGtalkShortcut(result, R.drawable.sym_action_sms,
                         "imto", Intent.ACTION_SENDTO));
                 break;
             }
@@ -232,7 +236,72 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
 
         // Make the URI a direct tel: URI so that it will always continue to work
         phoneUri = Uri.fromParts(scheme, number, null);
-        // phoneUri = Uri.fromParts(scheme, "gtalk://"+, null);
+        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(action, phoneUri));
+        intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
+        return intent;
+    }
+
+    /**
+     * Returns an Intent describing a direct gtalk shortcut.
+     *
+     * @param result The result from the phone number picker
+     * @return an Intent describing a phone number shortcut
+     */
+    private Intent generateGtalkShortcut(Intent result, int actionResId, String scheme, String action) {
+        Uri phoneUri = result.getData();
+        long personId = 0;
+        String name = null;
+        String number = null;
+        int type;
+        // From : http://www.higherpass.com/Android/Tutorials/Working-With-Android-Contacts/2/
+        // /home/sebastien/android-sdk-linux_x86-1.6_r1/platforms/android-1.6/samples/ApiDemos/src/com/example/android/apis/view/List7.java
+        String imWhere = Contacts.ContactMethods.KIND + " = ?"; 
+        String[] imWhereParams = new String[]{ Contacts.ContactMethods.CONTENT_IM_ITEM_TYPE}; 
+//        String imWhere = Contacts.ContactMethods.PERSON_ID 
+//            + " = ? AND " + Contacts.ContactMethods.KIND + " = ?"; 
+//        String[] imWhereParams = new String[]{id, 
+//            Contacts.ContactMethods.CONTENT_IM_ITEM_TYPE}; 
+        Cursor cursor = getContentResolver().query(ContactMethods.CONTENT_URI, 
+                null, null, null, null); 
+//                null, imWhere, imWhereParams, null); 
+//        startManagingCursor(c);
+//        int kindIndex = c.getColumnIndexOrThrow(ContactMethods.KIND);
+//        int dataIndex = c.getColumnIndexOrThrow(ContactMethods.DATA);
+//        int auxDataIndex = c.getColumnIndexOrThrow(ContactMethods.AUX_DATA);
+
+//        mPhoneColumnIndex = c.getColumnIndex(ContactMethods.DATA);
+//        ListAdapter adapter = new SimpleCursorAdapter(this,
+//                android.R.layout.simple_list_item_1, // Use a template
+                                                        // that displays a
+                                                        // text view
+//                c, // Give the cursor to the list adatper
+//                new String[] {ContactMethods.DATA}, // Map the NAME column in the
+                                            // people database to...
+//                new int[] {android.R.id.text1}); // The "text1" view defined in
+                                            // the XML template
+//        setListAdapter(adapter);
+//    }
+
+        try {
+            cursor.moveToFirst();
+//            personId = cursor.getLong(0);
+            name = cursor.getString(0);
+//            number = cursor.getString(2);
+//            type = cursor.getInt(3);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        Toast.makeText(getApplicationContext(), "Res:"  + name, Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(), "Res:"  + personId+ " : " + name + "::" + number+ "::" +type, Toast.LENGTH_LONG).show();
+        Intent intent = new Intent();
+        Uri personUri = Uri.withAppendedPath(ContactMethods.CONTENT_URI, name);
+//        intent.putExtra(Intent.EXTRA_SHORTCUT_ICON,
+//                generatePhoneNumberIcon(personUri, type, actionResId));
+
+        // Make the URI a direct tel: URI so that it will always continue to work
+        phoneUri = Uri.fromParts(scheme, "imto://gtalk/"+ name, null);
         intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(action, phoneUri));
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
         return intent;
