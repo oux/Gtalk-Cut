@@ -51,11 +51,13 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
     private static final int REQUEST_TEXT = 2;
     private static final int REQUEST_ACTIVITY = 3;
     private static final int REQUEST_CUSTOM = 4;
+    private static final int REQUEST_GTALK = 5;
 
     private static final int LIST_ITEM_DIRECT_CALL = 0;
     private static final int LIST_ITEM_DIRECT_TEXT = 1;
     private static final int LIST_ITEM_ACTIVITY = 2;
     private static final int LIST_ITEM_CUSTOM = 3;
+    private static final int LIST_ITEM_DIRECT_GTALK = 4;
 
     private static final int DIALOG_SHORTCUT_EDITOR = 1;
 
@@ -85,6 +87,14 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
                 intent.putExtra(Contacts.Intents.UI.TITLE_EXTRA_KEY,
                         getText(R.string.textShortcutActivityTitle));
                 startActivityForResult(intent, REQUEST_TEXT);
+                break;
+            }
+
+            case LIST_ITEM_DIRECT_GTALK: {
+                Intent intent = new Intent(Intent.ACTION_PICK, Phones.CONTENT_URI);
+                intent.putExtra(Contacts.Intents.UI.TITLE_EXTRA_KEY,
+                        getText(R.string.gtalkShortcutActivityTitle));
+                startActivityForResult(intent, REQUEST_GTALK);
                 break;
             }
 
@@ -120,6 +130,12 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
             case REQUEST_TEXT: {
                 startShortcutEditor(generatePhoneShortcut(result, R.drawable.sym_action_sms,
                         "smsto", Intent.ACTION_SENDTO));
+                break;
+            }
+
+            case REQUEST_GTALK: {
+                startShortcutEditor(generatePhoneShortcut(result, R.drawable.sym_action_sms,
+                        "imto", Intent.ACTION_SENDTO));
                 break;
             }
 
@@ -216,6 +232,7 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
 
         // Make the URI a direct tel: URI so that it will always continue to work
         phoneUri = Uri.fromParts(scheme, number, null);
+        // phoneUri = Uri.fromParts(scheme, "gtalk://"+, null);
         intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(action, phoneUri));
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
         return intent;

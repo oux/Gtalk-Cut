@@ -24,6 +24,7 @@
     <string-array name="mainMenu">
         <item>Direct call</item>
         <item>Direct text message</item>
+        <item>Direct gtalk</item>
         <item>Activity</item>
         <item>Make your own</item>
     </string-array>
@@ -35,6 +36,7 @@
 
 	<string name="callShortcutActivityTitle">Choose a number to call</string>
 	<string name="textShortcutActivityTitle">Choose a number to text</string>
+	<string name="gtalkShortcutActivityTitle">Choose a gtalk</string>
 	<string name="activityShortcutActivityTitle">Choose an activity</string>
 	<string name="customShortcutActivityTitle">Make your own shortcut</string>
 
