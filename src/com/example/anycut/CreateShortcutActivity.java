@@ -41,6 +41,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.util.Log;
 
 
 /**
@@ -55,7 +56,6 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
     private static final int REQUEST_TEXT = 2;
     private static final int REQUEST_ACTIVITY = 3;
     private static final int REQUEST_CUSTOM = 4;
-    private static final int REQUEST_GTALK = 5;
 
     private static final int LIST_ITEM_DIRECT_CALL = 0;
     private static final int LIST_ITEM_DIRECT_TEXT = 1;
@@ -67,6 +67,7 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
 
     private Intent mEditorIntent;
 
+	// Creation de la liste du menu principal
     @Override
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
@@ -75,6 +76,10 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
                 android.R.layout.simple_list_item_1));
     }
 
+	// Lors d'une selection :
+	// Creation d'un intent Pour aller chercher les lists de numero de telephone
+	// positionner un titre a cette intent
+	// Demarrer un Activity correspondant a cet intent
     @Override
     protected void onListItemClick(ListView list, View view, int position, long id) {
         switch (position) {
@@ -95,10 +100,20 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
             }
 
             case LIST_ITEM_DIRECT_GTALK: {
-                Intent intent = new Intent(Intent.ACTION_PICK, ContactMethods.CONTENT_URI);
+                //Intent intent = new Intent(Intent.ACTION_PICK, ContactMethods.CONTENT_URI);
+                Intent intent = new Intent();
+                intent.setClass(this, ActivityPickerGtalk.class);
                 intent.putExtra(Contacts.Intents.UI.TITLE_EXTRA_KEY,
                         getText(R.string.gtalkShortcutActivityTitle));
-                startActivityForResult(intent, REQUEST_GTALK);
+				try{
+					startActivityForResult(intent, REQUEST_CUSTOM);
+				}
+				catch(Exception ex)
+				{
+					// ActivityNotFoundException();
+					Log.v("gtalk shortcut", "Paf !");
+				}
+
                 break;
             }
 
@@ -136,13 +151,13 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
                         "smsto", Intent.ACTION_SENDTO));
                 break;
             }
-
+/*
             case REQUEST_GTALK: {
                 startShortcutEditor(generateGtalkShortcut(result, R.drawable.sym_action_sms,
                         "imto", Intent.ACTION_SENDTO));
                 break;
             }
-
+*/
             case REQUEST_ACTIVITY:
             case REQUEST_CUSTOM: {
                 startShortcutEditor(result);
@@ -264,23 +279,6 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
         Cursor cursor = getContentResolver().query(ContactMethods.CONTENT_URI, 
                 null, null, null, null); 
 //                null, imWhere, imWhereParams, null); 
-//        startManagingCursor(c);
-//        int kindIndex = c.getColumnIndexOrThrow(ContactMethods.KIND);
-//        int dataIndex = c.getColumnIndexOrThrow(ContactMethods.DATA);
-//        int auxDataIndex = c.getColumnIndexOrThrow(ContactMethods.AUX_DATA);
-
-//        mPhoneColumnIndex = c.getColumnIndex(ContactMethods.DATA);
-//        ListAdapter adapter = new SimpleCursorAdapter(this,
-//                android.R.layout.simple_list_item_1, // Use a template
-                                                        // that displays a
-                                                        // text view
-//                c, // Give the cursor to the list adatper
-//                new String[] {ContactMethods.DATA}, // Map the NAME column in the
-                                            // people database to...
-//                new int[] {android.R.id.text1}); // The "text1" view defined in
-                                            // the XML template
-//        setListAdapter(adapter);
-//    }
 
         try {
             cursor.moveToFirst();
