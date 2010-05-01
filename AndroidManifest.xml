@@ -54,6 +54,10 @@
             </intent-filter>
         </activity-->
 
+        <activity android:name=".GtalkPickerActivity"
+        	android:label="@string/gtalkShortcutActivityTitle"
+        />
+
         <activity android:name=".ActivityPickerActivity"
         	android:label="@string/activityShortcutActivityTitle"
         />

@@ -102,18 +102,8 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
             case LIST_ITEM_DIRECT_GTALK: {
                 //Intent intent = new Intent(Intent.ACTION_PICK, ContactMethods.CONTENT_URI);
                 Intent intent = new Intent();
-                intent.setClass(this, ActivityPickerGtalk.class);
-                intent.putExtra(Contacts.Intents.UI.TITLE_EXTRA_KEY,
-                        getText(R.string.gtalkShortcutActivityTitle));
-				try{
-					startActivityForResult(intent, REQUEST_CUSTOM);
-				}
-				catch(Exception ex)
-				{
-					// ActivityNotFoundException();
-					Log.v("gtalk shortcut", "Paf !");
-				}
-
+                intent.setClass(this, GtalkPickerActivity.class);
+                startActivityForResult(intent, REQUEST_CUSTOM);
                 break;
             }
 
@@ -251,55 +241,6 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
 
         // Make the URI a direct tel: URI so that it will always continue to work
         phoneUri = Uri.fromParts(scheme, number, null);
-        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(action, phoneUri));
-        intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
-        return intent;
-    }
-
-    /**
-     * Returns an Intent describing a direct gtalk shortcut.
-     *
-     * @param result The result from the phone number picker
-     * @return an Intent describing a phone number shortcut
-     */
-    private Intent generateGtalkShortcut(Intent result, int actionResId, String scheme, String action) {
-        Uri phoneUri = result.getData();
-        long personId = 0;
-        String name = null;
-        String number = null;
-        int type;
-        // From : http://www.higherpass.com/Android/Tutorials/Working-With-Android-Contacts/2/
-        // /home/sebastien/android-sdk-linux_x86-1.6_r1/platforms/android-1.6/samples/ApiDemos/src/com/example/android/apis/view/List7.java
-        String imWhere = Contacts.ContactMethods.KIND + " = ?"; 
-        String[] imWhereParams = new String[]{ Contacts.ContactMethods.CONTENT_IM_ITEM_TYPE}; 
-//        String imWhere = Contacts.ContactMethods.PERSON_ID 
-//            + " = ? AND " + Contacts.ContactMethods.KIND + " = ?"; 
-//        String[] imWhereParams = new String[]{id, 
-//            Contacts.ContactMethods.CONTENT_IM_ITEM_TYPE}; 
-        Cursor cursor = getContentResolver().query(ContactMethods.CONTENT_URI, 
-                null, null, null, null); 
-//                null, imWhere, imWhereParams, null); 
-
-        try {
-            cursor.moveToFirst();
-//            personId = cursor.getLong(0);
-            name = cursor.getString(0);
-//            number = cursor.getString(2);
-//            type = cursor.getInt(3);
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        Toast.makeText(getApplicationContext(), "Res:"  + name, Toast.LENGTH_LONG).show();
-//        Toast.makeText(getApplicationContext(), "Res:"  + personId+ " : " + name + "::" + number+ "::" +type, Toast.LENGTH_LONG).show();
-        Intent intent = new Intent();
-        Uri personUri = Uri.withAppendedPath(ContactMethods.CONTENT_URI, name);
-//        intent.putExtra(Intent.EXTRA_SHORTCUT_ICON,
-//                generatePhoneNumberIcon(personUri, type, actionResId));
-
-        // Make the URI a direct tel: URI so that it will always continue to work
-        phoneUri = Uri.fromParts(scheme, "imto://gtalk/"+ name, null);
         intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(action, phoneUri));
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
         return intent;
