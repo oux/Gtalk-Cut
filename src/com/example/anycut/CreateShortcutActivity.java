@@ -100,7 +100,6 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
             }
 
             case LIST_ITEM_DIRECT_GTALK: {
-                //Intent intent = new Intent(Intent.ACTION_PICK, ContactMethods.CONTENT_URI);
                 Intent intent = new Intent();
                 intent.setClass(this, GtalkPickerActivity.class);
                 startActivityForResult(intent, REQUEST_CUSTOM);
@@ -131,13 +130,15 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
 
         switch (requestCode) {
             case REQUEST_PHONE: {
-                startShortcutEditor(generatePhoneShortcut(result, R.drawable.sym_action_call,
+                startShortcutEditor(generatePhoneShortcut(result,
+                        R.drawable.sym_action_call,
                         "tel", Intent.ACTION_CALL));
                 break;
             }
 
             case REQUEST_TEXT: {
-                startShortcutEditor(generatePhoneShortcut(result, R.drawable.sym_action_sms,
+                startShortcutEditor(generatePhoneShortcut(result,
+                        R.drawable.sym_action_sms,
                         "smsto", Intent.ACTION_SENDTO));
                 break;
             }

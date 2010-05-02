@@ -21,10 +21,19 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.provider.Contacts.People;
+import android.provider.Contacts.Phones;
+import android.provider.Contacts.Photos;
 import android.provider.Contacts.ContactMethods;
 import android.provider.Contacts;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.net.Uri;
+import android.content.ContentUris;
+import android.content.res.Resources;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -32,7 +41,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.widget.ListView;
 import android.util.Log;
 
@@ -48,10 +56,7 @@ public class GtalkPickerActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list);
-        // mPhone = (TextView) findViewById(R.id.phone);
-        //getListView().setOnItemSelectedListener(this);
         // From : http://www.higherpass.com/Android/Tutorials/Working-With-Android-Contacts/2/
-        // /home/sebastien/android-sdk-linux_x86-1.6_r1/platforms/android-1.6/samples/ApiDemos/src/com/example/android/apis/view/List7.java
 //        String imWhere = Contacts.ContactMethods.KIND + " = ?"; 
 //        String[] imWhereParams = new String[]{ Contacts.ContactMethods.CONTENT_IM_ITEM_TYPE}; 
         String imWhere = ContactMethods.KIND + " = ?"; 
@@ -59,18 +64,11 @@ public class GtalkPickerActivity extends ListActivity {
 
         // Get a cursor with all people
         Cursor c = getContentResolver().query(ContactMethods.CONTENT_URI,
-                null, null, null, null);
+                null, null, null, People.DISPLAY_NAME);
                 // null, imWhere, imWhereParams, null); 
 
         Log.v("Gtalk Picker", "Im Item : "+ ContactMethods.CONTENT_IM_ITEM_TYPE);
-        for (int i = 0; i < (c.getColumnNames()).length; i++)
-            Log.v("Gtalk Picker", "column Name "+ i + " : "+ c.getColumnNames()[i]);
         startManagingCursor(c);
-        int kindIndex = c.getColumnIndexOrThrow(ContactMethods.KIND);
-        int dataIndex = c.getColumnIndexOrThrow(ContactMethods.DATA);
-        int auxDataIndex = c.getColumnIndexOrThrow(ContactMethods.AUX_DATA);
-
-        mPhoneColumnIndex = c.getColumnIndex(ContactMethods.DATA);
         ListAdapter adapter = new SimpleCursorAdapter(this,
                 android.R.layout.simple_list_item_2,
                 c,
@@ -79,33 +77,71 @@ public class GtalkPickerActivity extends ListActivity {
         setListAdapter(adapter);
     }
 
+    /**
+     * Generates a phone number shortcut icon. Adds an overlay describing the
+     * type of the phone
+     * number, and if there is a photo also adds the call action icon.
+     *
+     * @param personUri The person the phone number belongs to
+     * @return The bitmap for the icon
+     */
+    private Bitmap generateGtalkIcon(Uri personUri) {
+        final Resources r = getResources();
+        boolean drawPhoneOverlay = true;
+        Log.v("Gtalk Picker", "personUri: "+ personUri);
+
+        Bitmap photo = People.loadContactPhoto(this, personUri, 0, null);
+        if (photo == null) {
+            return null;
+        }
+
+        // Setup the drawing classes
+        int iconSize = (int) r.getDimension(android.R.dimen.app_icon_size);
+        Bitmap icon = Bitmap.createBitmap(iconSize, iconSize, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(icon);
+
+        // Copy in the photo
+        Paint photoPaint = new Paint();
+        photoPaint.setDither(true);
+        photoPaint.setFilterBitmap(true);
+        Rect src = new Rect(0,0, photo.getWidth(),photo.getHeight());
+        Rect dst = new Rect(0,0, iconSize,iconSize);
+        canvas.drawBitmap(photo, src, dst, photoPaint);
+
+        // Create an overlay for the phone number type
+        String overlay = "G";
+        if (overlay != null) {
+            Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DEV_KERN_TEXT_FLAG);
+            textPaint.setTextSize(20.0f);
+            textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+            textPaint.setColor(r.getColor(R.color.textColorIconOverlay));
+            textPaint.setShadowLayer(3f, 1, 1, r.getColor(R.color.textColorIconOverlayShadow));
+            canvas.drawText(overlay, 2, 16, textPaint);
+        }
+
+        return icon;
+    }
+
 
     @Override
     protected void onListItemClick(ListView list, View view, int position, long id) {
-        String item = "michoux@gmail.com"; //(String) getListAdapter().getItem(position);
-        //        Cursor c = ((Cursor) listAdapter.getItem(position));
-        //        long phoneNumber = c.getLong(c.getColumnIndex(People.NUMBER));
-//        intent.setComponent(new ComponentName(info.activityInfo.applicationInfo.packageName,
-//                info.activityInfo.name));
+        Cursor c = ((Cursor) getListAdapter().getItem(position));
+        String gtalk = c.getString(c.getColumnIndex(ContactMethods.DATA));
+        String name = c.getString(c.getColumnIndex(People.DISPLAY_NAME));
+        long personId = c.getLong(c.getColumnIndex(Phones.PERSON_ID));
         Intent result = new Intent();
-        result.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(Intent.ACTION_SENDTO, Uri.parse("imto://gtalk/" + item)));
+        result.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(Intent.ACTION_SENDTO, Uri.parse("imto://gtalk/" + gtalk)));
 
         // Set the name of the activity
-        result.putExtra(Intent.EXTRA_SHORTCUT_NAME, item);
+        result.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Talk to " + name);
 
-        // Build the icon info for the activity
-		/*
-        Drawable drawable = info.loadIcon(mPackageManager);
-        if (drawable instanceof BitmapDrawable) {
-            BitmapDrawable bd = (BitmapDrawable) drawable;
-            result.putExtra(Intent.EXTRA_SHORTCUT_ICON, bd.getBitmap());
-        }
-		*/
+        // Build the icon info for the gtalk contact
+        Uri personUri = ContentUris.withAppendedId(People.CONTENT_URI, personId);
+        result.putExtra(Intent.EXTRA_SHORTCUT_ICON,
+                generateGtalkIcon(personUri));
+
         // Set the result
         setResult(RESULT_OK, result);
         finish();
     }
-
-    private int mPhoneColumnIndex;
-    // private TextView mPhone;
 }
