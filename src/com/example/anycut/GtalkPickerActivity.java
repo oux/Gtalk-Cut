@@ -56,12 +56,12 @@ public class GtalkPickerActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list);
-        String imWhere = ContactMethods.KIND + " = ?"; 
-        String[] imWhereParams = new String[]{ Integer.toString(Contacts.KIND_IM) };
+        String imWhere = ContactMethods.KIND + " in(?,?) "; 
+        String[] imWhereParams = new String[]{ Integer.toString(Contacts.KIND_EMAIL), Integer.toString(Contacts.KIND_IM) };
 
         // Get a cursor with all people
         Cursor c = getContentResolver().query(ContactMethods.CONTENT_URI,
-                null, imWhere, imWhereParams, People.DISPLAY_NAME); 
+                null, imWhere, imWhereParams, "upper(" + People.DISPLAY_NAME + ")"); 
 
         Log.v("Gtalk Picker", "Im Item : "+ ContactMethods.CONTENT_IM_ITEM_TYPE);
         startManagingCursor(c);
@@ -122,11 +122,11 @@ public class GtalkPickerActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView list, View view, int position, long id) {
         Cursor c = ((Cursor) getListAdapter().getItem(position));
-        String gtalk = c.getString(c.getColumnIndex(ContactMethods.DATA));
+        String im_addr = c.getString(c.getColumnIndex(ContactMethods.DATA));
         String name = c.getString(c.getColumnIndex(People.DISPLAY_NAME));
         long personId = c.getLong(c.getColumnIndex(Phones.PERSON_ID));
         Intent result = new Intent();
-        result.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(Intent.ACTION_SENDTO, Uri.parse("imto://gtalk/" + gtalk)));
+        result.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(Intent.ACTION_SENDTO, Uri.parse("imto://gtalk/" + im_addr)));
 
         // Set the name of the activity
         result.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Talk to " + name);
