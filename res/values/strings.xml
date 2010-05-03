@@ -24,7 +24,7 @@
 	<string name="welcomeString">Gtalk Cut lets you create Home screen shortcuts to gtalk contact</string>
 	<string name="welcomeString2">You access Gtalk Cut by long pressing on the Home screen and selecting it from the Shortcut group</string>
 
-	<string name="gtalkShortcutActivityTitle">Choose a gtalk</string>
+	<string name="gtalkShortcutActivityTitle">Gtalk contact</string>
 
 	<string name="shortcutEditorTitle">Edit shortcut</string>
 	
