@@ -35,14 +35,9 @@ import android.os.Bundle;
 import android.provider.Contacts;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
-import android.provider.Contacts.ContactMethods;
-import android.provider.Contacts.Extensions;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-import android.util.Log;
-
 
 /**
  * Presents the user with a list of types of shortucts that can be created.
@@ -67,7 +62,6 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
 
     private Intent mEditorIntent;
 
-	// Creation de la liste du menu principal
     @Override
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
@@ -76,10 +70,6 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
                 android.R.layout.simple_list_item_1));
     }
 
-	// Lors d'une selection :
-	// Creation d'un intent Pour aller chercher les lists de numero de telephone
-	// positionner un titre a cette intent
-	// Demarrer un Activity correspondant a cet intent
     @Override
     protected void onListItemClick(ListView list, View view, int position, long id) {
         switch (position) {
@@ -130,25 +120,17 @@ public class CreateShortcutActivity extends ListActivity implements DialogInterf
 
         switch (requestCode) {
             case REQUEST_PHONE: {
-                startShortcutEditor(generatePhoneShortcut(result,
-                        R.drawable.sym_action_call,
+                startShortcutEditor(generatePhoneShortcut(result, R.drawable.sym_action_call,
                         "tel", Intent.ACTION_CALL));
                 break;
             }
 
             case REQUEST_TEXT: {
-                startShortcutEditor(generatePhoneShortcut(result,
-                        R.drawable.sym_action_sms,
+                startShortcutEditor(generatePhoneShortcut(result, R.drawable.sym_action_sms,
                         "smsto", Intent.ACTION_SENDTO));
                 break;
             }
-/*
-            case REQUEST_GTALK: {
-                startShortcutEditor(generateGtalkShortcut(result, R.drawable.sym_action_sms,
-                        "imto", Intent.ACTION_SENDTO));
-                break;
-            }
-*/
+
             case REQUEST_ACTIVITY:
             case REQUEST_CUSTOM: {
                 startShortcutEditor(result);

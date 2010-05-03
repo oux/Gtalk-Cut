@@ -47,13 +47,6 @@
             </intent-filter>
         </activity>
 
-        <!--activity android:name=".CreateGtalkShortcutActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.CREATE_SHORTCUT" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity-->
-
         <activity android:name=".GtalkPickerActivity"
         	android:label="@string/gtalkShortcutActivityTitle"
         />
