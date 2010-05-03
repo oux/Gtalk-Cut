@@ -47,9 +47,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".GtalkPickerActivity"
+        <activity android:name=".GtalkPickerActivity" 
         	android:label="@string/gtalkShortcutActivityTitle"
-        />
+            android:icon="@drawable/sym_action_sms">
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity android:name=".ActivityPickerActivity"
         	android:label="@string/activityShortcutActivityTitle"
