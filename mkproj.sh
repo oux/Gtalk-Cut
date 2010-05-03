@@ -1,1 +1,1 @@
-android update project --name AnyCut --target 1 --path $(pwd)
+android update project --name gtalkcut --target 1 --path $(pwd)

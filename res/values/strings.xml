@@ -17,34 +17,16 @@
 
 <resources>
 
-    <string name="app_name">Any Cut</string>
+    <string name="app_name">Gtalk Cut</string>
 
     <string name="shortcutName">Shortcut name</string>
     
-    <string-array name="mainMenu">
-        <item>Direct call</item>
-        <item>Direct text message</item>
-        <item>Direct gtalk</item>
-        <item>Activity</item>
-        <item>Make your own</item>
-    </string-array>
+	<string name="welcomeString">Gtalk Cut lets you create Home screen shortcuts to gtalk contact</string>
+	<string name="welcomeString2">You access Gtalk Cut by long pressing on the Home screen and selecting it from the Shortcut group</string>
 
-	<string name="welcomeString">Any Cut lets you create Home screen shortcuts to anything you want!</string>
-	<string name="welcomeString2">You may also access Any Cut by long pressing on the Home screen and selecting it from the Shortcut group</string>
-	<string name="newShortcut">New shortcut</string>
-	<string name="shortcutCreated">Shortcut created.</string>
-
-	<string name="callShortcutActivityTitle">Choose a number to call</string>
-	<string name="textShortcutActivityTitle">Choose a number to text</string>
 	<string name="gtalkShortcutActivityTitle">Choose a gtalk</string>
-	<string name="activityShortcutActivityTitle">Choose an activity</string>
-	<string name="customShortcutActivityTitle">Make your own shortcut</string>
 
 	<string name="shortcutEditorTitle">Edit shortcut</string>
-	
-	<string name="shortcutAction">Action</string>
-	<string name="shortcutData">Data</string>
-	<string name="shortcutType">Type</string>
 	
 	<string name="errorEmptyName">Name cannot be empty</string>
 </resources>
