@@ -56,16 +56,12 @@ public class GtalkPickerActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list);
-        // From : http://www.higherpass.com/Android/Tutorials/Working-With-Android-Contacts/2/
-//        String imWhere = Contacts.ContactMethods.KIND + " = ?"; 
-//        String[] imWhereParams = new String[]{ Contacts.ContactMethods.CONTENT_IM_ITEM_TYPE}; 
         String imWhere = ContactMethods.KIND + " = ?"; 
-        String[] imWhereParams = new String[]{ ContactMethods.CONTENT_IM_ITEM_TYPE}; 
+        String[] imWhereParams = new String[]{ Integer.toString(Contacts.KIND_IM) };
 
         // Get a cursor with all people
         Cursor c = getContentResolver().query(ContactMethods.CONTENT_URI,
-                null, null, null, People.DISPLAY_NAME);
-                // null, imWhere, imWhereParams, null); 
+                null, imWhere, imWhereParams, People.DISPLAY_NAME); 
 
         Log.v("Gtalk Picker", "Im Item : "+ ContactMethods.CONTENT_IM_ITEM_TYPE);
         startManagingCursor(c);
